@@ -1,13 +1,15 @@
 cmake_minimum_required (VERSION 2.8)
 project (fusibile)
 
+set(OpenCV_DIR "C:/OpenCV4/opencv4/install") # path to built opencv directory
+
 find_package(OpenCV REQUIRED )
 find_package(CUDA 6.0 REQUIRED ) # For Cuda Managed Memory and c++11
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(.)
 
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 --use_fast_math --ptxas-options=-v -std=c++11 --compiler-options -Wall -gencode arch=compute_60,code=sm_60 -gencode arch=compute_60,code=sm_60)
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 --use_fast_math --ptxas-options=-v -std=c++11 --compiler-options -Wall -gencode arch=compute_86,code=sm_86)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-std=c++11)
