@@ -9,7 +9,7 @@ find_package(CUDA 6.0 REQUIRED ) # For Cuda Managed Memory and c++11
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(.)
 
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 --use_fast_math --ptxas-options=-v -std=c++11 --compiler-options -Wall -gencode arch=compute_86,code=sm_86)
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O0 -DNDEBUG --use_fast_math --ptxas-options=-v -std=c++11 --compiler-options -Wall -gencode arch=compute_86,code=sm_86)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-std=c++11)
@@ -17,7 +17,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-Wextra)
     add_definitions(-pedantic)
     add_definitions(-Wno-unused-function)
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -ffast-math -march=native") # extend release-profile with fast-math
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O0 -DNDEBUG -ffast-math -march=native") # extend release-profile with fast-math
     #add_definitions(-march=native)
 endif()
 
