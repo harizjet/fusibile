@@ -557,8 +557,10 @@ static int runFusibile (int argc,
     string ext = ".png";
 
     string results_folder = "results/";
+    string outputs_folder = "results/";
 
     const char* results_folder_opt     = "-input_folder";
+    const char* output_folder_opt = "-output_folder";
     const char* p_input_folder_opt = "-p_folder";
     const char* krt_file_opt = "-krt_file";
     const char* images_input_folder_opt = "-images_folder";
@@ -573,7 +575,11 @@ static int runFusibile (int argc,
             results_folder = argv[++i];
             cout << "input folder is " << results_folder << endl;
 
-        }else if ( strcmp ( argv[i], p_input_folder_opt ) == 0 ){
+        }
+        else if ( strcmp ( argv[i], output_folder_opt ) == 0 ){
+            outputs_folder = argv[++i];
+        }
+        else if ( strcmp ( argv[i], p_input_folder_opt ) == 0 ){
             inputFiles.p_folder = argv[++i];
         }
         else if ( strcmp ( argv[i], krt_file_opt ) == 0 )
@@ -619,7 +625,7 @@ static int runFusibile (int argc,
     pTime = localtime(&timeObj);
 
     char output_folder[256];
-    sprintf(output_folder, "%s/consistencyCheck-%04d%02d%02d-%02d%02d%02d/",results_folder.c_str(), pTime->tm_year+1900, pTime->tm_mon+1,pTime->tm_mday,pTime->tm_hour, pTime->tm_min, pTime->tm_sec);
+    sprintf(output_folder, "%s/consistencyCheck-%04d%02d%02d-%02d%02d%02d/", outputs_folder.c_str(), pTime->tm_year+1900, pTime->tm_mon+1,pTime->tm_mday,pTime->tm_hour, pTime->tm_min, pTime->tm_sec);
 #if defined(_WIN32)
     _mkdir(output_folder);
 #else
@@ -645,6 +651,7 @@ static int runFusibile (int argc,
     for(size_t i=0;i<subfolders.size();i++) {
         //make sure that it has the right format (DATE_TIME_INDEX)
         size_t n = std::count(subfolders[i].begin(), subfolders[i].end(), '_');
+        //cout << "folder found " << subfolders[i] << " has " << n << " _" << endl;
         if(n < 2)
             continue;
         if (subfolders[i][0] != '2')
@@ -660,17 +667,23 @@ static int runFusibile (int argc,
 
         //consideredIds.push_back(id_string);
         consideredIds.insert(pair<int,string>(i,id_string));
-        //cout << "id_string is " << id_string << endl;
+        // cout << "id_string is " << id_string << (inputFiles.images_folder + id_string + ".png").c_str() << endl;
         //cout << "i is " << i << endl;
         //char outputPath[256];
         //sprintf(outputPath, "%s.png", id_string);
 
-        if( access( (inputFiles.images_folder + id_string + ".png").c_str(), R_OK ) != -1 )
-            inputFiles.img_filenames.push_back((id_string + ".png"));
-        else if( access( (inputFiles.images_folder + id_string + ".jpg").c_str(), R_OK ) != -1 )
-            inputFiles.img_filenames.push_back((id_string + ".jpg"));
-        else if( access( (inputFiles.images_folder + id_string + ".ppm").c_str(), R_OK ) != -1 )
-            inputFiles.img_filenames.push_back((id_string + ".ppm"));
+        if (access((inputFiles.images_folder + id_string + ".png").c_str(), R_OK) != -1) {
+            inputFiles.img_filenames.push_back(id_string + ".png");
+            ext = ".png";
+        }
+        else if (access((inputFiles.images_folder + id_string + ".jpg").c_str(), R_OK) != -1) {
+            inputFiles.img_filenames.push_back(id_string + ".jpg");
+            ext = ".jpg";
+        }
+        else if (access((inputFiles.images_folder + id_string + ".ppm").c_str(), R_OK) != -1) {
+            inputFiles.img_filenames.push_back(id_string + ".ppm");
+            ext = ".ppm";
+        }
     }
     size_t numImages = inputFiles.img_filenames.size ();
     cout << "numImages is " << numImages << endl;

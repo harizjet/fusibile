@@ -8,6 +8,7 @@
 #include <limits>
 #include <signal.h>
 
+
 Mat_<float> getColSubMat ( Mat_<float> M, int* indices, int numCols ) {
     Mat_<float> subMat = Mat::zeros ( M.rows,numCols,CV_32F );
     for ( int i = 0; i < numCols; i++ ) {
@@ -282,7 +283,12 @@ CameraParameters getCameraParameters ( CameraParameters_cu &cpc, InputFiles inpu
         numCameras = inputFiles.img_filenames.size ();
         params.cameras.resize ( numCameras );
         for ( size_t i = 0; i < numCameras; i++ ) {
-            readPFileStrechaPmvs ( inputFiles.p_folder + inputFiles.img_filenames[i] + ".P",params.cameras[i].P );
+            unsigned ind = inputFiles.img_filenames[i].find_last_of('.');
+            string filename = inputFiles.img_filenames[i].substr(0, ind);
+
+            readPFileStrechaPmvs ( inputFiles.p_folder + filename + ".P", params.cameras[i].P);
+            
+            // cout << filename << endl;
             unsigned found = inputFiles.img_filenames[i].find_last_of ( "." );
             //params.cameras[i].id = atoi ( inputFiles.img_filenames[i].substr ( 0,found ).c_str () );
             params.cameras[i].id = inputFiles.img_filenames[i].substr ( 0,found ).c_str ();
